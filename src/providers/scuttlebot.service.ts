@@ -166,7 +166,7 @@ export class ScuttlebotService {
                 .posts
                 .filter(item => item.id === id)
                 .length,
-            );
+        );
         if (count > 0) {
             return;
         }
@@ -200,10 +200,10 @@ export class ScuttlebotService {
             const _id = data.key;
             const post = this
                 .store
-                .selectSnapshot((state: { posts: PostModel[]}) => state
+                .selectSnapshot((state: { posts: PostModel[] }) => state
                     .posts
                     .filter(item => item.id === _id),
-                );
+            );
             if ((post instanceof PostModel) && !post.isMissing) {
                 return;
             }
@@ -522,14 +522,15 @@ export class ScuttlebotService {
         return new Promise<void>((resolve, reject) => {
             pull(
                 feed,
-                pull.drain((data: any) => {
-                    setImmediate(() => {
-                        callback.bind(this, data)();
-                    });
-                }, (error: any) => {
-                    if (error) {
-                        reject(error);
+                pull.collect((err: any, data: any) => {
+                    if (err) {
+                        reject(err);
                         return;
+                    }
+                    for (const item of data) {
+                        setImmediate(() => {
+                            callback.bind(this, item)();
+                        });
                     }
                     resolve();
                 }),

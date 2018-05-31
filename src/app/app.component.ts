@@ -12,6 +12,7 @@ import {
     Router,
 } from '@angular/router';
 import {
+    Select,
     Store,
 } from '@ngxs/store';
 import {
@@ -51,6 +52,9 @@ export class AppComponent implements OnInit {
 
     // @Select(CurrentFeedSettingState)
     public currentFeedSettings: Observable<CurrentFeedSettings>;
+
+    @Select((state: any) => state.posts.length)
+    public messageCount!: Observable<number>;
 
     public sidebar: any;
 

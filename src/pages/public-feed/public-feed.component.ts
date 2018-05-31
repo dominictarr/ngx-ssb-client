@@ -25,6 +25,9 @@ import {
 import {
     Observable,
 } from 'rxjs';
+import {
+    debounceTime,
+} from 'rxjs/operators';
 
 import {
     PaginateFeed,
@@ -82,7 +85,15 @@ export class PublicFeedComponent implements OnDestroy {
         private changeDetectorRef: ChangeDetectorRef,
         private _hotkeysService: HotkeysService,
     ) {
-        this.posts = this.store.select(PublicFeedComponent.feedSelector);
+        this.posts = this
+            .store
+            .select(PublicFeedComponent.feedSelector)
+            .pipe(
+                debounceTime(300),
+        );
+        this.posts.subscribe(() => {
+            this.changeDetectorRef.detectChanges();
+        });
         this.route.url.subscribe(() => {
             const id = this.route.snapshot.paramMap.get('channel');
             if (!(typeof id === 'string')) {
