@@ -55,7 +55,7 @@ export class ScuttlebotService {
             reverse: true,
             limit: itemCount,
         });
-
+        console.count('updateFeed');
         return this.drainFeed(feed, this.parsePacket.bind(this));
 
     }
@@ -174,9 +174,11 @@ export class ScuttlebotService {
         try {
             const packet = await get(id);
             if (packet && packet.content) {
-                this.parsePacket({
-                    key: id,
-                    value: packet,
+                setImmediate(() => {
+                    this.parsePacket({
+                        key: id,
+                        value: packet,
+                    });
                 });
             }
         } catch (error) {
@@ -195,7 +197,7 @@ export class ScuttlebotService {
             values: true,
             keys: true,
         });
-
+        console.count('fetchThread');
         await this.drainFeed(feed, async (data: any) => {
             const _id = data.key;
             const post = this
@@ -226,6 +228,7 @@ export class ScuttlebotService {
             id: whoami.id,
         });
 
+        console.count('init');
         await this.drainFeed(userFeed, this.parsePacket.bind(this));
 
         this.store.dispatch(new UpdateMessageCount(true));
